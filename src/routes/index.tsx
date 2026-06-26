@@ -6,7 +6,6 @@ import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
 import { Toaster } from '@/components/ui/sonner'
@@ -21,11 +20,12 @@ import {
   Plane,
   Loader2,
 } from 'lucide-react'
+import { EmptyState, Field, LoadingState, TripChat } from '@/components'
 
 export const Route = createFileRoute('/')({
   head: () => ({
     meta: [
-      { title: 'Wayfarer — AI Travel Itineraries' },
+      { title: 'Wayfarer | AI Travel Itineraries' },
       {
         name: 'description',
         content:
@@ -69,7 +69,7 @@ function Index() {
   const update = <K extends keyof Form>(k: K, v: Form[K]) =>
     setForm((f) => ({ ...f, [k]: v }))
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!form.source || !form.destination || !form.startDate || !form.endDate) {
       toast.error('Please fill in source, destination and dates.')
@@ -224,28 +224,32 @@ function Index() {
           {!itinerary && !loading && <EmptyState />}
           {loading && <LoadingState />}
           {itinerary && (
-            <Card className="p-6 sm:p-10 bg-card border-border/60 shadow-soft">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">
-                <Sparkles className="h-3.5 w-3.5 text-accent" /> Your itinerary
-              </div>
-              <article className="itinerary-prose">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                    a: ({ node, ...props }) => (
-                      <a
-                        {...props}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary underline underline-offset-2 hover:opacity-80"
-                      />
-                    ),
-                  }}
-                >
-                  {itinerary}
-                </ReactMarkdown>
-              </article>
-            </Card>
+            <>
+              <Card className="p-6 sm:p-10 bg-card border-border/60 shadow-soft">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">
+                  <Sparkles className="h-3.5 w-3.5 text-accent" /> Your
+                  itinerary
+                </div>
+                <article className="itinerary-prose">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      a: ({ node, ...props }) => (
+                        <a
+                          {...props}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary underline underline-offset-2 hover:opacity-80"
+                        />
+                      ),
+                    }}
+                  >
+                    {itinerary}
+                  </ReactMarkdown>
+                </article>
+              </Card>
+              <TripChat itinerary={itinerary} />
+            </>
           )}
         </section>
       </main>
@@ -255,77 +259,5 @@ function Index() {
         hours and bookings.
       </footer>
     </div>
-  )
-}
-
-function Field({
-  icon,
-  label,
-  children,
-}: {
-  icon: React.ReactNode
-  label: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="space-y-1.5">
-      <Label className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground font-medium">
-        <span className="text-primary/70">{icon}</span>
-        {label}
-      </Label>
-      {children}
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <Card className="p-10 sm:p-14 bg-gradient-card border-dashed border-border/70 text-center">
-      <div className="mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-5">
-        <Compass className="h-7 w-7 text-primary" />
-      </div>
-      <h3 className="font-display text-3xl text-foreground">
-        Your next adventure awaits
-      </h3>
-      <p className="mt-3 text-muted-foreground max-w-md mx-auto">
-        Fill the form and we'll handcraft a day-by-day plan tuned to your dates,
-        budget and the kind of traveler you are.
-      </p>
-      <div className="mt-8 grid grid-cols-3 gap-3 max-w-md mx-auto">
-        {['Day-by-day plan', 'Stay & food', 'Budget table'].map((t) => (
-          <div
-            key={t}
-            className="rounded-xl bg-card/60 border border-border/60 py-3 px-2 text-xs font-medium text-foreground/70"
-          >
-            {t}
-          </div>
-        ))}
-      </div>
-    </Card>
-  )
-}
-
-function LoadingState() {
-  return (
-    <Card className="p-10 bg-gradient-card border-border/60 shadow-soft">
-      <div className="flex items-center gap-3 text-primary">
-        <Loader2 className="h-5 w-5 animate-spin" />
-        <span className="font-display text-xl">Mapping your route…</span>
-      </div>
-      <div className="mt-6 space-y-3">
-        {[90, 75, 85, 60, 80].map((w, i) => (
-          <div key={i} className="h-3 rounded-full bg-muted overflow-hidden">
-            <div
-              className="h-full bg-linear-to-r from-primary/40 to-accent/40 animate-pulse"
-              style={{ width: `${w}%` }}
-            />
-          </div>
-        ))}
-      </div>
-      <p className="mt-6 text-sm text-muted-foreground">
-        Picking neighborhoods, balancing the budget, and finding the good food
-        spots.
-      </p>
-    </Card>
   )
 }

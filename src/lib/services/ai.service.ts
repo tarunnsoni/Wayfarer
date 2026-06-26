@@ -15,7 +15,7 @@ export const planTrip = createServerFn({ method: 'POST' })
     }),
   )
   .handler(async ({ data }) => {
-    const apiKey = process.env.GEMINI_API_KEY
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY
 
     if (!apiKey) {
       throw new Error('Missing GEMINI API KEY')
