@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { convertToModelMessages, streamText, type UIMessage } from 'ai'
 import { google } from '@ai-sdk/google'
+import { TRAVEL_CURRENCY_INSTRUCTION } from '@/lib/travel-currency'
 
 type ChatRequestBody = {
   messages?: unknown
@@ -25,7 +26,9 @@ export const Route = createFileRoute('/api/chat')({
 
         const system = `You are a warm, knowledgeable travel concierge helping the user refine and discuss their trip. Answer questions about the itinerary, suggest alternatives, give practical tips (visas, weather, transit, etiquette, safety), and recommend specific places. Keep answers concise, use markdown, and use small tables when comparing options.
 
-${tripContext ? `Here is the trip itinerary the user is discussing:\n\n${tripContext}` : 'The user has not generated an itinerary yet — help them plan generally.'}`
+        ${TRAVEL_CURRENCY_INSTRUCTION}
+
+        ${tripContext ? `Here is the trip itinerary the user is discussing:\n\n${tripContext}` : "The user has not generated an itinerary yet — help them plan generally."}`;
 
         const result = streamText({
           model: google('gemini-2.5-flash'),
